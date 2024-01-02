@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>hex to JP code</title>
+  <style>
+    table {
+      font-size: 2em;
+      font-weight: 700;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    td {
+      background-color: lightgray;
+      width: fit-content;
+    }
+  </style>
+</head>
+<body>
+  <div class="tid-sid-container">
+    <h1>TID, SID 변경코드</h1>
+    <table>
+      <tr>
+        <th>상자1</th>
+        <td>もけぬうい</td>
+      </tr>
+      <tr>
+        <th>상자5</th>
+        <td>かッンＮテぞけノ</td>
+      </tr>
+      <tr>
+        <th>상자6</th>
+        <td>アぱゥひし　ｌ</td>
+      </tr>
+      <tr>
+        <th>상자7</th>
+        <td>ゴゥぃＢＦＣ</td>
+      </tr>
+      <tr>
+        <th>상자8</th>
+        <td>アｌコ　う</td>
+      </tr>
+      <tr>
+        <th>상자9</th>
+        <td>①②③④❶❷❸❹</td>
+      </tr>
+    </table>
+  
+    <input id="tid" type="text" placeholder="TID(10진수)">
+    <input id="sid" type="text" placeholder="SID(10진수)">
+    <button id="changeTidSidCode">생성</button>
+    <h1 style="background-color:lightgray;width:fit-content;white-space: break-spaces;" id="tidSidCode"></h1>
+  </div>
+  <div class="seed-container">
+    <h1>프레임 이동 코드</h1>
+    <table>
+      <tr>
+        <th>상자1</th>
+        <td>もけぬうい</td>
+      </tr>
+      <tr>
+        <th>상자5</th>
+        <td>かッンＮテぞさタ</td>
+      </tr>
+      <tr>
+        <th>상자6</th>
+        <td>アぃＢＦＣ</td>
+      </tr>
+      <tr>
+        <th>상자8</th>
+        <td>アｌコ　う</td>
+      </tr>
+      <tr>
+        <th>상자9</th>
+        <td>①②③④❶❷❸❹</td>
+      </tr>
+    </table>
+
+    <input id="seed" type="text" placeholder="seed(16진수)">
+    <button id="changeSeedCode">생성</button>
+    <h1 style="background-color:lightgray;width:fit-content;white-space: break-spaces;" id="seedCode"></h1>
+  </div>
+  <div class="money-container">
+    <h1>소지금 증가</h1>
+    <table>
+      <tr>
+        <th>상자1</th>
+        <td>ゾ①①①①</td>
+      </tr>
+    </table>
+
+    <input id="money" type="number" placeholder="number(10진수)">
+    <button id="changeMoneyCode">생성</button>
+    <h1 style="background-color:lightgray;width:fit-content;white-space: break-spaces;" id="moneyCode" ></h1>
+  </div>
+  <div class="item-container">
+    <h1>아이템 입수</h1>
+    <table>
+      <tr>
+        <th>상자1</th>
+        <td>べ①①②②</td>
+      </tr>
+    </table>
+
+    <select id="itemList">
+    </select>
+    <input id="amount" type="number" placeholder="number(10진수)">
+    <button id="getItemCode">생성</button>
+    <h1 style="background-color:lightgray;width:fit-content;white-space: break-spaces;" id="itemCode" ></h1>
+  </div>
+  
+
+  <script src="./index.js"></script>
+  <script>
+    const tid = document.getElementById('tid');
+    const sid = document.getElementById('sid');
+    const seed = document.getElementById('seed');
+    const money = document.getElementById('money');
+    const itemList = document.getElementById('itemList');
+    const amount = document.getElementById('amount');
+    const changeTidSidCode = document.getElementById('changeTidSidCode');
+    const changeSeedCode = document.getElementById('changeSeedCode');
+    const changeMoneyCode = document.getElementById('changeMoneyCode');
+    const getItemCode = document.getElementById('getItemCode');
+    const tidSidCode = document.getElementById('tidSidCode');
+    const seedCode = document.getElementById('seedCode');
+    const moneyCode = document.getElementById('moneyCode');
+    const itemCode = document.getElementById('itemCode');
+
+    (() => {
+      const option = document.createElement('option');
+      const optionList = Object.entries(ITEM_LIST)
+        .map(([hex, itemName]) => {
+          const itemOption = option.cloneNode(true);
+          itemOption.value = hex;
+          itemOption.textContent = itemName;
+
+          return itemOption;
+        });
+      itemList.append(...optionList);
+    })();
+    
+    changeTidSidCode.addEventListener('click', (event) => {
+      const TIDHex = hex2CharCode(tid.value, 10);
+      const SIDHex = hex2CharCode(sid.value, 10);
+
+      if (TIDHex.upper && TIDHex.lower && SIDHex.upper && SIDHex.lower) {
+        return tidSidCode.textContent = `${TIDHex.upper}${SIDHex.upper}${TIDHex.lower}${SIDHex.lower}`;
+      }
+      
+      jpCode.textContent = `error`;
+    });
+
+    changeSeedCode.addEventListener('click', (event) => {
+      const {upper, lower} = hex2CharCode(seed.value);
+
+      if (!upper || !lower) {
+        return seedCode.textContent = 'error';
+      }
+
+      seedCode.textContent = `${upper}${lower}`;
+    });
+
+    changeMoneyCode.addEventListener('click', (event) => {
+      const {upper, lower} = hex2CharCode(money.value, 10);
+
+      if (!upper || !lower) {
+        return moneyCode.textContent = 'error';
+      }
+
+      moneyCode.textContent = `ゾ${upper}${lower}`.trim().padEnd('5', '　');
+    });
+
+    getItemCode.addEventListener('click', (event) => {
+      const itemHex = hex2CharCode(itemList.value);
+      const amountHex = hex2CharCode(amount.value, 10);
+
+      if (itemHex.upper && amountHex.upper) {
+        return itemCode.textContent = `べ${itemHex.upper}${amountHex.upper}`.trim().padEnd('5', '　');;
+      }
+
+      itemCode.textContent = 'error';
+    });
+  </script>
+</body>
+</html>
